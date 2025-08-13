@@ -14,15 +14,16 @@ const ProductCard = ({ product, onQuickViewClick }) => {
   const { toggleFavorite, addToCart, isFavorite } = useShop();
 
   return (
-    <div className="border rounded-lg overflow-hidden group relative flex flex-col">
-      <div className="relative">
-        <div className="w-full h-48 sm:h-64 md:h-80 relative">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden group relative flex flex-col hover:shadow-lg transition-shadow duration-300">
+      <div className="relative bg-gray-50">
+        <div className="w-full h-40 relative overflow-hidden">
           <Image 
             src={product.imageUrl} 
             alt={product.name} 
             fill
-            className="object-cover"
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-contain hover:object-cover transition-all duration-300"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+            priority={product.id <= 8}
           />
         </div>
         
@@ -43,19 +44,37 @@ const ProductCard = ({ product, onQuickViewClick }) => {
         {product.hasFastShipping && <span className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-green-500 text-white text-xs font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded z-10">Hızlı Teslimat</span>}
       </div>
 
-      <div className="p-2 sm:p-3 md:p-4 flex-grow flex flex-col">
-        <p className="text-xs sm:text-sm">
-          <span className="font-bold">{product.brand}</span>
-          <span className="text-gray-600 truncate block" title={product.name}>
-            {product.name.length > 25 ? product.name.substring(0, 25) + '...' : product.name}
-          </span>
-        </p>
-        <div className="mt-1 sm:mt-2"><span className="text-sm sm:text-lg font-bold text-orange-600">{product.price.toFixed(2)} TL</span>{product.originalPrice && <span className="text-xs sm:text-sm text-gray-500 line-through ml-1 sm:ml-2">{product.originalPrice.toFixed(2)} TL</span>}</div>
+      <div className="p-3 flex-grow flex flex-col">
+        <div className="mb-2">
+          <p className="text-sm font-semibold text-gray-900 mb-1">{product.brand}</p>
+          <p className="text-xs text-gray-600 line-clamp-2" title={product.name}>
+            {product.name}
+          </p>
+        </div>
+        
+        <div className="mt-auto">
+          <div className="flex flex-col gap-1 mb-2">
+            <span className="text-sm font-bold text-orange-600">
+              {product.price.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL
+            </span>
+            {product.originalPrice && (
+              <span className="text-xs text-gray-500 line-through">
+                {product.originalPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL
+              </span>
+            )}
+          </div>
+          
+          {product.originalPrice && (
+            <div className="text-xs text-green-600 font-medium">
+              %{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)} İndirim
+            </div>
+          )}
+        </div>
       </div>
       
       <button 
         onClick={() => addToCart(product)}
-        className="absolute bottom-0 left-0 w-full bg-orange-500 text-white py-2 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm sm:text-base"
+        className="absolute bottom-0 left-0 w-full bg-orange-500 text-white py-2 font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 text-sm hover:bg-orange-600 transform translate-y-full group-hover:translate-y-0"
       >
         Sepete Ekle
       </button>

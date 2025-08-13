@@ -4,7 +4,13 @@ import path from 'path';
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   images: {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+    unoptimized: false,
   },
   webpack: (config) => {
     config.resolve.alias = {

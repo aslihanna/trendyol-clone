@@ -6,6 +6,7 @@ import ProductCard from '../components/ProductCard';
 import MobileFilterBar from '../components/MobileFilterBar';
 import FilterModal from '../components/FilterModal';
 import QuickViewModal from '../components/QuickViewModal';
+import Sidebar from '../components/Sidebar';
 
 export default function Home() {
   const { searchTerm } = useShop();
@@ -19,14 +20,14 @@ export default function Home() {
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
-
+    
     // Arama filtresi
     if (searchTerm.trim()) {
-      const lowercasedSearchTerm = searchTerm.toLowerCase();
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(lowercasedSearchTerm) ||
-        product.brand.toLowerCase().includes(lowercasedSearchTerm)
-      );
+      product.name.toLowerCase().includes(lowercasedSearchTerm) ||
+      product.brand.toLowerCase().includes(lowercasedSearchTerm)
+    );
     }
 
     // Kategori filtresi
@@ -89,33 +90,65 @@ export default function Home() {
 
   return (
     <>
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        <div className="flex flex-col md:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Breadcrumb */}
+        <div className="text-xs text-gray-500 mb-2">
+          Trendyol {'>'} {
+            searchTerm ? `"${searchTerm}" araması` : 
+            selectedCategory ? selectedCategory : 
+            selectedBrand ? `${selectedBrand} markası` : 
+            'Tüm Ürünler'
+          }
+        </div>
+        
+        {/* Page Header */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-gray-900">
+              {searchTerm ? `"${searchTerm}" araması` : 
+               selectedCategory ? selectedCategory : 
+               selectedBrand ? `${selectedBrand} markası` : 
+               'Tüm Ürünler'}
+            </h1>
+            <p className="text-sm text-gray-600">{filteredProducts.length} Ürün Listeleniyor</p>
+          </div>
+        </div>
+        
+        <div className="flex flex-col lg:flex-row gap-6">
           
-          <div className="w-full">
+          <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
+            <Sidebar 
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedBrand={selectedBrand}
+              setSelectedBrand={setSelectedBrand}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+            />
+          </div>
+          
+          <div className="flex-1 min-w-0">
             
             <MobileFilterBar 
               onFilterClick={() => setIsFilterMenuOpen(true)} 
               onSortClick={() => setIsFilterMenuOpen(true)}
+              hasActiveFilters={selectedCategory || selectedBrand || priceRange.min || priceRange.max || sortBy !== 'default'}
+              onClearFilters={clearFilters}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedBrand={selectedBrand}
+              setSelectedBrand={setSelectedBrand}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
             />
 
-            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm mb-4">
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
-                {searchTerm ? `"${searchTerm}" araması için ` : '"Tüm Ürünler" için '} 
-                {filteredProducts.length} sonuç listeleniyor
-              </h1>
-              
-              <div className="hidden md:flex items-center justify-end mt-4">
-                <div className="relative">
-                  <button className="border rounded-md px-4 py-2 text-sm flex items-center">
-                    Önerilen Sıralama
-                    <SortIcon />
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map(product => (
                   <ProductCard 
@@ -132,8 +165,8 @@ export default function Home() {
               )}
             </div>
             
-            <div className="text-center mt-6 sm:mt-8">
-                <button className="border border-gray-300 bg-white px-8 sm:px-12 md:px-16 py-2 sm:py-3 rounded-lg hover:border-orange-500 hover:text-orange-500 transition text-sm sm:text-base">
+            <div className="text-center mt-8">
+                <button className="border border-gray-300 bg-white px-12 py-3 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors text-sm font-medium">
                     DAHA FAZLA ÜRÜN GÖSTER
                 </button>
             </div>
@@ -146,135 +179,16 @@ export default function Home() {
         onClose={() => setIsFilterMenuOpen(false)}
         onClear={clearFilters}
         onApply={applyFilters}
-      >
-        <div className="space-y-6">
-          {/* Kategori Filtresi */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Kategori</h3>
-            <div className="space-y-2">
-              {categories.map(category => (
-                <label key={category} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="category"
-                    value={category}
-                    checked={selectedCategory === category}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">{category}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Marka Filtresi */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Marka</h3>
-            <div className="space-y-2">
-              {brands.map(brand => (
-                <label key={brand} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="brand"
-                    value={brand}
-                    checked={selectedBrand === brand}
-                    onChange={(e) => setSelectedBrand(e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">{brand}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Fiyat Aralığı */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Fiyat Aralığı</h3>
-            <div className="space-y-2">
-              <div className="flex space-x-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={priceRange.min}
-                  onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-                <span className="text-gray-500">-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={priceRange.max}
-                  onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Sıralama */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Sıralama</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="sort"
-                  value="default"
-                  checked={sortBy === 'default'}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">Önerilen</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="sort"
-                  value="price-low"
-                  checked={sortBy === 'price-low'}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">Fiyat (Düşükten Yükseğe)</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="sort"
-                  value="price-high"
-                  checked={sortBy === 'price-high'}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">Fiyat (Yüksekten Düşüğe)</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="sort"
-                  value="rating"
-                  checked={sortBy === 'rating'}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">Puana Göre</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="sort"
-                  value="name"
-                  checked={sortBy === 'name'}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm">İsme Göre</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </FilterModal>
+        selectedCategory={selectedCategory}
+        selectedBrand={selectedBrand}
+        filteredProductsCount={filteredProducts.length}
+        setSelectedCategory={setSelectedCategory}
+        setSelectedBrand={setSelectedBrand}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
       <QuickViewModal 
         product={quickViewProduct} 
