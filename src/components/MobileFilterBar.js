@@ -31,17 +31,20 @@ const MobileFilterBar = ({
     // md:hidden -> Bu bar, medium (tablet) ve daha büyük ekranlarda GİZLENECEK.
     <div className="md:hidden sticky top-0 bg-white border-b border-gray-200 z-10 py-2 mb-4">
       {/* Ana filtre/sıralama bar */}
-      <div className="flex items-center justify-between px-4">
+      <div className="flex items-center px-4">
         <button 
           onClick={onSortClick}
-          className="flex items-center text-sm font-medium text-gray-900"
+          className="flex items-center text-sm font-medium text-gray-900 ml-4"
         >
           <SortIcon />
           <span>Önerilen</span>
         </button>
+        <div className="flex-1 flex justify-center">
+          <div className="w-px h-6 bg-gray-300"></div>
+        </div>
         <button 
           onClick={onFilterClick}
-          className="flex items-center text-sm font-medium text-gray-900"
+          className="flex items-center text-sm font-medium text-gray-900 mr-8"
         >
           <FilterIcon />
           <span>

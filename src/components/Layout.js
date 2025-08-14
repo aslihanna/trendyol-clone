@@ -5,15 +5,17 @@ import Head from 'next/head';
 const Layout = ({ children }) => {
   return (
     <div className="bg-gray-50 min-h-screen">
+      <div className="bg-white">
       <Head>
         <title>Trendyol Clone</title>
         <meta name="description" content="Responsive product list page clone with Next.js and Tailwind CSS" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
+        <Header />
+      </div>
 
-      <main>
+      <main className="bg-gray-50">
         {children}
       </main>
 
